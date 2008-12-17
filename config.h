@@ -97,7 +97,7 @@
 	#define USE_LCD_4Bit	0
 
 	//AD-Wandler benutzen?
-	#define USE_ADC			1
+	#define USE_ADC			0
 
 	//Kamera mit einbinden
 	//Kamera arbeitet nur mit einem 14,7456Mhz Quarz!
