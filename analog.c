@@ -4,17 +4,17 @@
  Remarks:        
  known Problems: none
  Version:        31.12.2007
- Description:    Analogeingänge Abfragen
+ Description:    Analogeingï¿½nge Abfragen
  
- Dieses Programm ist freie Software. Sie können es unter den Bedingungen der 
- GNU General Public License, wie von der Free Software Foundation veröffentlicht, 
- weitergeben und/oder modifizieren, entweder gemäß Version 2 der Lizenz oder 
- (nach Ihrer Option) jeder späteren Version. 
+ Dieses Programm ist freie Software. Sie kï¿½nnen es unter den Bedingungen der 
+ GNU General Public License, wie von der Free Software Foundation verï¿½ffentlicht, 
+ weitergeben und/oder modifizieren, entweder gemï¿½ï¿½ Version 2 der Lizenz oder 
+ (nach Ihrer Option) jeder spï¿½teren Version. 
 
- Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, 
- daß es Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, 
+ Die Verï¿½ffentlichung dieses Programms erfolgt in der Hoffnung, 
+ daï¿½ es Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, 
  sogar ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT 
- FÜR EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License. 
+ Fï¿½R EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License. 
 
  Sie sollten eine Kopie der GNU General Public License zusammen mit diesem 
  Programm erhalten haben. 
@@ -43,7 +43,7 @@ ISR (ADC_vect)
 	var_array[channel++] = ADC;
 	//usart_write("Kanal(%i)=%i\n\r",(channel-1),var_array[(channel-1)]);
 	if (channel > 7) channel = 0;
-    ADMUX =(1<<REFS0) + channel;
+    ADMUX =(1<<REFS1) + channel;
     //ANALOG_ON;//ADC ON
 }
 
