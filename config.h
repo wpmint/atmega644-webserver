@@ -22,8 +22,6 @@
  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA. 
 ------------------------------------------------------------------------------*/
 
-// SVN Test :D
-
 #ifndef _CONFIG_H_
 	#define _CONFIG_H_	
 	
@@ -40,18 +38,29 @@
 	//Achtung!!!! an PORTB ist der ENC
 	//nur ‰ndern wenn man weiﬂ was man macht!
 
+    //Watchdog timer for the ENC2860, resets the stack if timeout occurs
+    #define WTT 1200 //Watchdog timer in timer interrupt
+
+    //NTP refresh before stack timeout occurs...
+    #define NTP_REFRESH 1140
 
 	//Umrechnung von IP zu unsigned long
 	#define IP(a,b,c,d) ((unsigned long)(d)<<24)+((unsigned long)(c)<<16)+((unsigned long)(b)<<8)+a
 
-	//IP des Webservers
-	#define MYIP		IP(192,168,1,99)
+	//IP des Webservers und des Routers
+	#define MYIP		IP(192,168,0,99)
+    #define ROUTER_IP	IP(192,168,0,1)
 
 	//Netzwerkmaske
 	#define NETMASK		IP(255,255,255,0)
 	
-	//IP des Routers
-	#define ROUTER_IP	IP(192,168,0,1)
+    //DHCP-Server
+    #define USE_DHCP    0 //1 = DHCP Client on
+  
+    //DNS-Server
+    #define USE_DNS     0 //1 = DNS Client on
+    #define DNS_IP      IP(192,168,0,1)
+    
 	
 	//IP des NTP-Servers z.B. Server 1.de.pool.ntp.org
 	#define USE_NTP		1 //1 = NTP Client on
@@ -72,8 +81,8 @@
 	
 	//Taktfrequenz
 	//#define F_CPU 20000000UL
-    #define F_CPU 16000000UL	
-	//#define F_CPU 14745600UL
+    	//#define F_CPU 16000000UL	
+	#define F_CPU 14745000UL
 	//#define F_CPU 11059200UL
 	
 	//Timertakt intern oder extern
@@ -88,11 +97,11 @@
 	#define USE_LCD_4Bit	0
 
 	//AD-Wandler benutzen?
-	#define USE_ADC			0
+	#define USE_ADC			1
 
 	//Kamera mit einbinden
 	//Kamera arbeitet nur mit einem 14,7456Mhz Quarz!
-	#define USE_CAM			0
+	#define USE_CAM			1
 	#define USE_SERVO		0
 	//In cam.c kˆnnen weitere Parameter eingestellt werde
 	//z.B. Licht, Kompression usw.
@@ -100,14 +109,15 @@
 	//0 = 160x120 Pixel k¸rzer (zum testen OK ;-)
 	//1 = 320x240 Pixel ca. 10 Sek. bei einem Mega644
 	//2 = 640x480 Pixel l‰nger (dauert zu lang!)
-	#define CAM_RESELUTION	0
+	#define CAM_RESELUTION	1
 	
 	//Webserver mit Passwort? (0 == mit Passwort)
-	#define HTTP_AUTH_DEFAULT	0
+	#define HTTP_AUTH_DEFAULT	1
 	
 	//AUTH String "USERNAME:PASSWORT" max 14Zeichen 
 	//f¸r Username:Passwort
 	#define HTTP_AUTH_STRING "admin:uli1"
+    //#define HTTP_AUTH_STRING "user:pass"
 	
     //Email vesand benutzen? Konfiguration des
     //Emailclient in der Sendmail.h

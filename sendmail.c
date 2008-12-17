@@ -245,7 +245,7 @@ unsigned char mail_send (void)
 			for(unsigned long a=0;a<2000000;a++){asm("nop");};
 			
 			MAIL_DEBUG("Mail empfang am Clientport (%i)",my_mail_cp);
-			tcp_port_open (MAIL_SERVER,LBBL_ENDIAN_INT(MAIL_PORT),LBBL_ENDIAN_INT(my_mail_cp));
+			tcp_port_open (MAIL_SERVER,HTONS(MAIL_PORT),HTONS(my_mail_cp));
 			mail_send_counter = 0;
 			mail_get = 1;
 			
@@ -253,7 +253,7 @@ unsigned char mail_send (void)
 			unsigned char tmp_counter = 0;
 			while((index >= MAX_ARP_ENTRY) && (tcp_entry[index].app_status != 1))
 			{
-				index = tcp_entry_search (MAIL_SERVER,LBBL_ENDIAN_INT(MAIL_PORT));
+				index = tcp_entry_search (MAIL_SERVER,HTONS(MAIL_PORT));
 				if (tmp_counter++ > 30)
 				{
 					MAIL_DEBUG("TCP Eintrag nicht gefunden (Mailserver)\r\n");

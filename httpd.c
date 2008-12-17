@@ -24,16 +24,17 @@
 #include "httpd.h"
 #include "webpage.h"
 #include "lcd.h"
-
+#include "ntp.h"
 
 struct http_table http_entry[MAX_TCP_ENTRY];
 
 //Hier wird das codierte Passwort aus config.h gespeichert.
-unsigned char http_auth_passwort[20];
+unsigned char http_auth_passwort[30];
 
 unsigned char post_in[5] = {'O','U','T','='};
 unsigned char post_ready[5] = {'S','U','B','='};
 unsigned char PORT_tmp = 0;
+char dstr[24]={"No Time...             "};
 
 //----------------------------------------------------------------------------
 //Variablenarry zum einfügen in Webseite %VA@00 bis %VA@09
@@ -141,7 +142,7 @@ void httpd_header_check (unsigned char index)
 {
 	unsigned int a = 0;
 	
-	if(strstr((char*)&eth_buffer[TCP_DATA_START_VAR],PSTR("POST"))!=0)
+	if(strcasestr_P((char*)&eth_buffer[TCP_DATA_START_VAR],PSTR("POST"))!=0)
 		{
 		http_entry[index].post = 1;
 		}
@@ -248,27 +249,27 @@ void httpd_header_check (unsigned char index)
 	
 		while(WEBPAGE_TABLE[page_index].filename)
 		{
-			if (strstr((char*)&eth_buffer[TCP_DATA_START_VAR],WEBPAGE_TABLE[page_index].filename)!=0) 
+			if (strcasestr((char*)&eth_buffer[TCP_DATA_START_VAR],WEBPAGE_TABLE[page_index].filename)!=0) 
 				{
 					http_entry[index].http_header_type = 1;
 					HTTP_DEBUG("\r\n\r\nDatei gefunden: ");
 					HTTP_DEBUG("%s",(char*)WEBPAGE_TABLE[page_index].filename);
 					HTTP_DEBUG("<----------------\r\n\r\n");	
-					if (strstr(WEBPAGE_TABLE[page_index].filename,".jpg")!=0)
+					if (strcasestr(WEBPAGE_TABLE[page_index].filename,".jpg")!=0)
 					{
 						#if USE_CAM
-						if (strstr(WEBPAGE_TABLE[page_index].filename,"camera")!=0)
+						if (strcasestr(WEBPAGE_TABLE[page_index].filename,"camera")!=0)
 						{	
 							http_entry[index].cam = 1;
 						}
 						#endif //USE_CAM
 						http_entry[index].http_header_type = 1;
 					}
-					if (strstr(WEBPAGE_TABLE[page_index].filename,".gif")!=0)
+					if (strcasestr(WEBPAGE_TABLE[page_index].filename,".gif")!=0)
 					{
 						http_entry[index].http_header_type = 1;
 					}	
-					if (strstr(WEBPAGE_TABLE[page_index].filename,".htm")!=0)
+					if (strcasestr(WEBPAGE_TABLE[page_index].filename,".htm")!=0)
 					{
 						http_entry[index].http_header_type = 0;	
 					}	
@@ -410,6 +411,27 @@ void httpd_data_send (unsigned char index)
 				http_entry[index].new_page_pointer=http_entry[index].new_page_pointer+5;
 			}
 			
+            #if USE_NTP
+            //Zeit in Webseite einfügen
+            if (strncasecmp_P("TIME",http_entry[index].new_page_pointer,4)==0)
+            {
+                if (ntp_state == NTP_STATE_REQ_ERR)
+                {
+                    strcpy("dstr","-");
+                }
+                else
+                {
+                    ntp_struct dt;
+                    decode_time(time, &dt);
+                    sprintf_P(dstr, PSTR("%s, %s"), dt.datestr, dt.timestr);
+                }
+                str_len = strnlen(dstr,24);
+                memmove(&eth_buffer[TCP_DATA_START+a],dstr,str_len);
+                a += str_len - 1;
+                http_entry[index].new_page_pointer=http_entry[index].new_page_pointer+4;
+            }
+            #endif
+            
 			//Einsetzen des Port Status %PORTxy durch "checked" wenn Portx.Piny = 1
 			//x: A..G  y: 0..7 
 			if (strncasecmp_P("PORT",http_entry[index].new_page_pointer,4)==0)

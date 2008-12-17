@@ -132,8 +132,8 @@ PROGMEM char Page1[] = {
 	"</tr>\r\n"
 	"<tr>\r\n"
 	"<td><p align=\"center\">AD-Kanal3</p>    </td>\r\n"
-	"<td><p align=\"center\"></p><img src=\"balke.gif\" width=\" %VA@02\"height=\"10\"></td>\r\n"
-	"<td><p align=\"center\">%VA@02</p></td>\r\n"
+	"<td><p align=\"center\"></p><img src=\"balke.gif\" width=\" %VA@03\"height=\"10\"></td>\r\n"
+	"<td><p align=\"center\">%VA@03</p></td>\r\n"
 	"</tr>\r\n"
 	"</table>\r\n"
 	
@@ -160,6 +160,10 @@ PROGMEM char Page4[] = {
 "</div><BR>\r\n"
 "<div>Compiliert am "__DATE__" um " __TIME__"<vr> Compiliert mit GCC Version "__VERSION__"</div>\r\n"
 "<div>Besucher seit Start des Webservers (%VA@09)</div>\r\n"
+
+#if USE_NTP
+"<BR><div>Aktuelle Zeit: %TIME</div>\r\n"
+#endif
 
 "<BR><BR> <p align=\"left\"> <h2></h2><BR>\r\n"
 "<p><a href=\"index.htm\">Hauptseite</a></p><BR>\r\n"

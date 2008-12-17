@@ -25,7 +25,6 @@
 #include "cmd.h"
 
 volatile unsigned int variable[MAX_VAR];
-char cmd_buffer[40];
 
 COMMAND_STRUCTUR COMMAND_TABELLE[] = // Befehls-Tabelle
 {
@@ -223,7 +222,7 @@ void command_tcp (void)
 		usart_write(".%3i",((tcp_entry[index].ip&0x0000FF00)>>8));
 		usart_write(".%3i",((tcp_entry[index].ip&0x00FF0000)>>16));
 		usart_write(".%3i",((tcp_entry[index].ip&0xFF000000)>>24));
-		usart_write("  PORT:%4i",LBBL_ENDIAN_INT(tcp_entry[index].src_port));
+		usart_write("  PORT:%4i",HTONS(tcp_entry[index].src_port));
 		usart_write("  Time:%4i\r\n",tcp_entry[index].time);
 	}
 }
@@ -299,14 +298,13 @@ void command_ping (void)
 {
 	if (*((unsigned int*)&variable[0]) != 0x00000000)
 	{
-		unsigned long dest_ip = ((variable[0])+((unsigned long)(variable[1])<<8)+((unsigned long)(variable[2])<<16)+((unsigned long)(variable[3])<<24));
-		
+		(*((unsigned long*)&ping.ip1[0])) = ((variable[0])+((unsigned long)(variable[1])<<8)+((unsigned long)(variable[2])<<16)+((unsigned long)(variable[3])<<24));
 		//ARP Request senden
-		arp_request (dest_ip);
+		arp_request ( (*(unsigned long*)&ping.ip1[0]));
 		
 		//ICMP-Nachricht Type=8 Code=0: Echo-Anfrage
 		//TODO: Sequenznummer, Identifier 
-		icmp_send(dest_ip,0x08,0x00,1,1);
+		icmp_send( (*(unsigned long*)&ping.ip1[0]),0x08,0x00,1,1);
 	}
 }
 
@@ -325,6 +323,49 @@ void command_help (void)
 	}while(data != 0);
 #endif
 }
+
+//------------------------------------------------------------------------------
+//save all ip-datas
+void save_ip_addresses(void)
+{
+  for (unsigned char count = 0; count<4; count++)
+  {
+    eeprom_busy_wait ();
+    eeprom_write_byte((unsigned char *)(IP_EEPROM_STORE + count),myip[count]);
+  }
+  for (unsigned char count = 0; count<4; count++)
+  {
+    eeprom_busy_wait ();
+    eeprom_write_byte((unsigned char *)(NETMASK_EEPROM_STORE + count),netmask[count]);
+  }
+  for (unsigned char count = 0; count<4; count++)
+  {
+    eeprom_busy_wait ();
+    eeprom_write_byte((unsigned char *)(ROUTER_IP_EEPROM_STORE + count),router_ip[count]);
+  }
+  #if USE_DNS
+  for (unsigned char count = 0; count<4; count++)
+  {
+    eeprom_busy_wait ();
+    eeprom_write_byte((unsigned char *)(DNS_IP_EEPROM_STORE + count),dns_server_ip[count]);
+  }
+  #endif //USE_DNS
+}
+
+//------------------------------------------------------------------------------
+//Read all IP-Datas
+void read_ip_addresses (void)
+{
+  (*((unsigned long*)&myip[0]))      = get_eeprom_value(IP_EEPROM_STORE,MYIP);
+  (*((unsigned long*)&netmask[0]))   = get_eeprom_value(NETMASK_EEPROM_STORE,NETMASK);
+  (*((unsigned long*)&router_ip[0])) = get_eeprom_value(ROUTER_IP_EEPROM_STORE,ROUTER_IP);
+	
+	#if USE_DNS
+	//DNS-Server IP aus EEPROM auslesen
+	(*((unsigned long*)&dns_server_ip[0])) = get_eeprom_value(DNS_IP_EEPROM_STORE,DNS_IP);
+	#endif
+}
+
 
 
 
