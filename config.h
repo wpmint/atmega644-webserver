@@ -101,7 +101,7 @@
 
 	//Kamera mit einbinden
 	//Kamera arbeitet nur mit einem 14,7456Mhz Quarz!
-	#define USE_CAM			1
+	#define USE_CAM			0
 	#define USE_SERVO		0
 	//In cam.c k�nnen weitere Parameter eingestellt werde
 	//z.B. Licht, Kompression usw.
