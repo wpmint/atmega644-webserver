@@ -48,7 +48,7 @@
 	#define IP(a,b,c,d) ((unsigned long)(d)<<24)+((unsigned long)(c)<<16)+((unsigned long)(b)<<8)+a
 
 	//IP des Webservers und des Routers
-	#define MYIP		IP(192,168,0,99)
+	#define MYIP		IP(192,168,1,99)
     #define ROUTER_IP	IP(192,168,0,1)
 
 	//Netzwerkmaske
@@ -101,7 +101,7 @@
 
 	//Kamera mit einbinden
 	//Kamera arbeitet nur mit einem 14,7456Mhz Quarz!
-	#define USE_CAM			0
+	#define USE_CAM			1
 	#define USE_SERVO		0
 	//In cam.c k�nnen weitere Parameter eingestellt werde
 	//z.B. Licht, Kompression usw.
