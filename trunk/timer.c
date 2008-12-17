@@ -66,22 +66,26 @@ return;
 //Timer Interrupt
 #if EXTCLOCK==1
 	#if defined (__AVR_ATmega644__)
-		ISR (TIMER2_COMPA_vect){
+    ISR (TIMER2_COMPA_vect)
 	#else
-		ISR (TIMER2_COMP_vect){
+    ISR (TIMER2_COMP_vect)
 	#endif
 #else
-	ISR (TIMER1_COMPA_vect){
+	ISR (TIMER1_COMPA_vect)
 #endif
-	//Sekunde um 1 erhöhen
+{
+	//tick 1 second
 	time++;
-    if((time_watchdog++) > WTT)
-        {
-        time_watchdog = 0;
-        stack_init();
-        }
+    if((stack_watchdog++) > WTT)  //emergency reset of the stack
+    {
+        RESET();
+	}
     eth.timer = 1;
 	#if USE_NTP
 	ntp_timer--;
 	#endif //USE_NTP
+	#if USE_DHCP
+	if ( dhcp_lease > 0 ) dhcp_lease--;
+    if ( gp_timer   > 0 ) gp_timer--;
+    #endif //USE_DHCP
 }

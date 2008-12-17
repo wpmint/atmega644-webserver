@@ -29,15 +29,15 @@
 	#include "stack.h"
 	#include "ntp.h"
     #include "cmd.h"
+    #include "dhcpc.h"
 
 	#if defined (__AVR_ATmega644__) || defined (__AVR_ATmega644P__)
 		#define TIMSK TIMSK1
 	#endif 
 
-    #define WTT 1200 //Watchdog Time
-
 	volatile unsigned long time;
-    volatile unsigned long time_watchdog;
+    volatile unsigned int  stack_watchdog;
+    volatile unsigned char gp_timer;
 	void timer_init (void);
  
 #endif //_TIMER_H

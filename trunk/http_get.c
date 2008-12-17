@@ -66,12 +66,12 @@ void http_request (void)
         {
             for(unsigned long a=0;a<2000000;a++){asm("nop");};
             
-            tcp_port_open (WEATHER_SERVER_IP,LBBL_ENDIAN_INT(80),LBBL_ENDIAN_INT(my_http_cp));
+            tcp_port_open (WEATHER_SERVER_IP,HTONS(80),HTONS(my_http_cp));
                
             unsigned char tmp_counter = 0;
             while((index >= MAX_ARP_ENTRY) && (tcp_entry[index].app_status != 1))
             {
-                index = tcp_entry_search (WEATHER_SERVER_IP,LBBL_ENDIAN_INT(80));
+                index = tcp_entry_search (WEATHER_SERVER_IP,HTONS(80));
                 if (tmp_counter++ > 30)
                 {
                     HTTPC_DEBUG("TCP Eintrag nicht gefunden (HTTP_CLIENT)!\r\n");
@@ -93,7 +93,7 @@ void http_request (void)
     if (http_get_state > 10 && http_get_state < 20)
     {
         HTTPC_DEBUG("\r\n\r\n\r\nDaten Anfordern\r\n");
-        index = tcp_entry_search (WEATHER_SERVER_IP,LBBL_ENDIAN_INT(80));
+        index = tcp_entry_search (WEATHER_SERVER_IP,HTONS(80));
         memcpy_P(&eth_buffer[TCP_DATA_START],WEATHER_GET_STRING,(sizeof(WEATHER_GET_STRING)-1));
         tcp_entry[index].status =  ACK_FLAG | PSH_FLAG;
         create_new_tcp_packet((sizeof(WEATHER_GET_STRING)-1),index);

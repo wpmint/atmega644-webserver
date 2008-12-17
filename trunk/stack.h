@@ -37,6 +37,8 @@
 #include "networkcard/rtl8019.h"
 #include "config.h"
 #include "timer.h"
+#include "dnsc.h"
+#include "dhcpc.h"
 
 //#define DEBUG usart_write	//mit Debugausgabe
 #define DEBUG(...) 			//ohne Debugausgabe
@@ -68,8 +70,8 @@ typedef struct
 TCP_PORT_ITEM TCP_PORT_TABLE[MAX_APP_ENTRY];
 UDP_PORT_ITEM UDP_PORT_TABLE[MAX_APP_ENTRY];
 	
-#define LBBL_ENDIAN_INT(x)	((x & 0x00FF)<<8)+((x & 0xFF00)>>8)
-#define LBBL_ENDIAN_LONG(x) ((x & 0xFF000000)>>24)+((x & 0x00FF0000)>>8)+((x & 0x0000FF00)<<8)+((x & 0x000000FF)<<24)
+#define HTONS(n) (unsigned int)((((unsigned int) (n)) << 8) | (((unsigned int) (n)) >> 8))
+#define HTONS32(x) ((x & 0xFF000000)>>24)+((x & 0x00FF0000)>>8)+((x & 0x0000FF00)<<8)+((x & 0x000000FF)<<24)
 
 unsigned char myip[4];
 unsigned char netmask[4];
@@ -135,8 +137,18 @@ struct tcp_table
 	volatile unsigned char first_ack	:1	;
 };
 
+typedef struct
+{
+    unsigned char ip1[4];
+    volatile unsigned char no;
+    volatile unsigned char result;
+}PING_STRUCT;
+
+extern PING_STRUCT ping;
 //----------------------------------------------------------------------------
 //Prototypen
+unsigned int  htons(unsigned int val);
+unsigned long htons32(unsigned long val);
 void stack_init (void);
 void check_packet (void);
 void eth_get_data (void);
@@ -168,8 +180,11 @@ void find_and_start (unsigned char index);
 void tcp_timer_call (void);
 void arp_timer_call (void);
 void add_tcp_app (unsigned int, void(*fp1)(unsigned char));
+void kill_tcp_app (unsigned int port);
 void add_udp_app (unsigned int, void(*fp1)(unsigned char));
+void kill_udp_app (unsigned int port);
 void change_port_tcp_app (unsigned int, unsigned int);
+void pinging (void);
 
 #define ETHER_OFFSET			0x00
 #define ARP_OFFSET				0x0E

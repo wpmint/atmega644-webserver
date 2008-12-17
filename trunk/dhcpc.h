@@ -1,11 +1,11 @@
-/*------------------------------------------------------------------------------
- Copyright:      Radig Ulrich  mailto: mail@ulrichradig.de
- Author:         Radig Ulrich
+/*----------------------------------------------------------------------------
+ Copyright:      Michael Kleiber
+ Author:         Michael Kleiber
  Remarks:        
  known Problems: none
- Version:        31.12.2007
- Description:    Analogeingänge Abfragen
- 
+ Version:        29.04.2008
+ Description:    DHCP Client
+
  Dieses Programm ist freie Software. Sie können es unter den Bedingungen der 
  GNU General Public License, wie von der Free Software Foundation veröffentlicht, 
  weitergeben und/oder modifizieren, entweder gemäß Version 2 der Lizenz oder 
@@ -21,32 +21,33 @@
  Falls nicht, schreiben Sie an die Free Software Foundation, 
  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA. 
 ------------------------------------------------------------------------------*/
-#include "analog.h"
+#include "config.h"
 
-#if USE_ADC
-volatile unsigned char channel = 0;
+#if USE_DHCP
+#ifndef _DHCPCLIENT_H
+	#define _DHCPCLIENT_H
 
-//------------------------------------------------------------------------------
-//
-void ADC_Init(void)
-{ 
-	ADMUX = (1<<REFS0);
-	//Free Running Mode, Division Factor 128, Interrupt on
-	ADCSRA=(1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0)|(1<<ADIE);
-}
+	//#define DHCP_DEBUG usart_write
+	#define DHCP_DEBUG(...)
 
-//------------------------------------------------------------------------------
-//
-ISR (ADC_vect)
-{
-    ANALOG_OFF; //ADC OFF
-	var_array[channel++] = ADC;
-	//usart_write("Kanal(%i)=%i\n\r",(channel-1),var_array[(channel-1)]);
-	if (channel > 7) channel = 0;
-    ADMUX =(1<<REFS0) + channel;
-    //ANALOG_ON;//ADC ON
-}
+	#include <avr/io.h>
+	#include <avr/pgmspace.h>
+	#include "stack.h"
+	#include "usart.h"
+	#include "timer.h"
 
-#endif //USE_ADC
+	#define DHCP_CLIENT_PORT		  68
+	#define DHCP_SERVER_PORT		  67
 
+
+volatile unsigned long dhcp_lease;
+volatile unsigned char dhcp_timer;
+
+void dhcp_init     (void);
+void dhcp_message  (unsigned char type);
+void dhcp_get      (void);
+unsigned char dhcp (void);
+
+#endif //_DHCPCLIENT_H
+#endif //USE_DHCP
 

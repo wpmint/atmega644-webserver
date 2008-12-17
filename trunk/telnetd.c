@@ -124,7 +124,7 @@ void telnetd_send_data (void)
 	{
 		for (index = 0;index<MAX_TCP_ENTRY;index++)
 		{
-			if(tcp_entry[index].dest_port == LBBL_ENDIAN_INT(23))
+			if(tcp_entry[index].dest_port == HTONS(23))
 			{
 				if(!telnetd_status.ack_wait)
 					{
