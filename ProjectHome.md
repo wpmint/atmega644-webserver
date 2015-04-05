@@ -1,0 +1,1 @@
+ETH\_M32\_EX with temperature-dependent resistor and a webcam
